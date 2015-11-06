@@ -144,9 +144,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\Box.cpp" />
+    <ClCompile Include="..\..\..\src\DataParser.cpp" />
+    <ClCompile Include="..\..\..\src\FileManager.cpp" />
+    <ClCompile Include="..\main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\inc\Box.h" />
+    <ClInclude Include="..\..\..\inc\DataParser.h" />
+    <ClInclude Include="..\..\..\inc\FileManager.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
