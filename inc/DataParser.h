@@ -5,7 +5,7 @@ class DataParser
 {
 public:
 	DataParser();
-	Box getBox(char* unParsedData);
+	Box parseBox(char* unParsedData);
 	size_t getParsedBoxSize(char* unParsedData);
 	char* getParsedBoxType(char* unParsedData);
 	char* getParsedPayload(char* unParsedData);

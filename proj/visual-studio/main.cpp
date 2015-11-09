@@ -7,15 +7,35 @@ int main(int argn, char* argv[])
 {
 	long offset = 0;
 	size_t fileSize = 0;
-	size_t boxSize = 0;
-	char* boxData = NULL;
-	Box box;
-	FileManager FileReader("E:\\devel\\c++\\mp4-container-analyzer\\res\\test.mp4", "rb");
+	char* path = argv[2];
+	
+	
+	if(NULL == path)
+	{
+		printf("Invalid file path!\n");
+		return 1;
+	}
+
+	FileManager FileReader(path, "rb");
 	DataParser Parser;
 
 	fileSize = FileReader.getFileSize();
-	boxSize = Parser.getParsedBoxSize(FileReader.getData(offset, 4));
-	boxData = FileReader.getData(offset, boxSize);
-	box = Parser.getBox(boxData);
+	while(fileSize != offset)
+	{
+		//1. Get Box size
+		size_t boxSize = Parser.getParsedBoxSize(FileReader.getData(offset, 4));
+
+		//2. Get Box data
+		char* boxData = FileReader.getData(offset, boxSize);
+
+		//3. Parse Box data.
+		Box box = Parser.parseBox(boxData);
+
+		//4. Refresh offset
+		if(box.mSubBox == true)
+			offset+=8;
+		else
+			offset += boxSize;
+	}
 	return 0;
 }

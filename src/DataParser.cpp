@@ -13,19 +13,21 @@ DataParser::DataParser()
 	parsedSubBox = false;
 }
 
-Box DataParser::getBox(char* unParsedData)
+Box DataParser::parseBox(char* unParsedData)
 {
 	parsedBoxSize = getParsedBoxSize(unParsedData);
 	parsedBoxType = getParsedBoxType(unParsedData);
 
-	if (strncmp(parsedBoxType, "moov", 4) ||
-		strncmp(parsedBoxType, "trak", 4) ||
-		strncmp(parsedBoxType, "mdia", 4) || 
-		strncmp(parsedBoxType, "minf", 4) || 
-		strncmp(parsedBoxType, "dinf", 4) || 
-		strncmp(parsedBoxType, "stbl", 4) || 
-		strncmp(parsedBoxType, "udta", 4))
+	if (0 == strncmp(parsedBoxType, "moov", 4) ||
+		0 == strncmp(parsedBoxType, "trak", 4) ||
+		0 == strncmp(parsedBoxType, "mdia", 4) || 
+		0 == strncmp(parsedBoxType, "minf", 4) || 
+		0 == strncmp(parsedBoxType, "dinf", 4) || 
+		0 == strncmp(parsedBoxType, "stbl", 4) || 
+		0 == strncmp(parsedBoxType, "udta", 4))
 		parsedSubBox = true;
+	else
+		parsedSubBox = false;
 
 	parsedBoxPayload = getParsedPayload(unParsedData);
 
@@ -36,21 +38,19 @@ Box DataParser::getBox(char* unParsedData)
 
 size_t DataParser::getParsedBoxSize(char* unParsedData)
 {
-	if (parsedBoxSize == 0)
-	{
-		for (int i = 0; i < 4; i++)
-			strParsedBoxSize[i] = unParsedData[i];
-		parsedBoxSize = (size_t)convertToInteager((unsigned char*)strParsedBoxSize);
-	}
+	for (int i = 0; i < 4; i++)
+		strParsedBoxSize[i] = unParsedData[i];
+	parsedBoxSize = (size_t)convertToInteager((unsigned char*)strParsedBoxSize);
+	
 	return parsedBoxSize;
 }
 
 char* DataParser::getParsedBoxType(char* unParsedData)
 {
-	int i;
+	int i,j = 0;
 
 	for (i = 4; i < 8; i++)
-		parsedBoxType[i] = unParsedData[i];
+		parsedBoxType[j++] = unParsedData[i];
 
 	return parsedBoxType;
 }
@@ -58,15 +58,14 @@ char* DataParser::getParsedBoxType(char* unParsedData)
 
 char* DataParser::getParsedPayload(char* unParsedData)
 {
-	int i, j;
-	size_t unParsedDataLen = strlen(unParsedData);
-
-	if (strncmp(parsedBoxType, "moov", 4) == 0)
+	int i, j = 0;
+	
+	if (strncmp(parsedBoxType, "mdta", 4) == 0)
 		parsedBoxPayload = "This box has media data.";
 	else
-		parsedBoxPayload = (char*)realloc(parsedBoxPayload, strlen(unParsedData - 8));
-	for (i = 8, j = 0; i < unParsedDataLen; i++, j++)
-		parsedBoxPayload[j] = unParsedData[i];
+		parsedBoxPayload = (char*)realloc(parsedBoxPayload, parsedBoxSize - 8);
+	for (i = 8; i < parsedBoxSize; i++)
+		parsedBoxPayload[j++] = unParsedData[i];
 
 	return parsedBoxPayload;
 }
@@ -83,7 +82,7 @@ DataParser::~DataParser()
 int DataParser::convertToInteager(unsigned char* str) {
 	int i;
 	int ret = 0;
-	int byteSize = strlen((char*)str);
+	int byteSize = sizeof(str);
 	
 	for(i = 0; i< byteSize; i++)
 		ret = ret | str[byteSize -1 - i]<<i*8;

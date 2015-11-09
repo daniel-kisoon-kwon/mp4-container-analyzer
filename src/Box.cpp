@@ -12,6 +12,7 @@ Box::Box(size_t size, bool subBox, char* type, char* payload)
 	printf("[box] subBox = %d\n", mSubBox);
 	printf("[box] mType = %s\n", mType);
 	printf("[box] mPayload = %s\n", mPayload);
+	printf("\n");
 }
 
 Box::~Box()
