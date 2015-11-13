@@ -11,8 +11,9 @@ int main(int argn, char* argv[])
 	long offset = 0;
 	size_t fileSize = 0;
 	char* path = argv[2];
-	
-	
+	int depth = 0;
+	long endOfDepth[128] = {0,};
+
 	if(NULL == path)
 	{
 		printf("Invalid file path!\n");
@@ -20,6 +21,7 @@ int main(int argn, char* argv[])
 	}
 
 	FileManager FileReader(path, "rb");
+	FileManager FileWriter("output", "wa");
 	DataParser Parser;
 
 	fileSize = FileReader.getFileSize();
@@ -36,28 +38,27 @@ int main(int argn, char* argv[])
 		int payloadLen = box.mSize - 8;
 
 		//4. Print Box data.
-		printf("[box] size = %d\n", box.mSize);
-		printf("[box] subBox = %d\n", box.mSubBox);
-		printf("[box] mType = %s\n", box.mType);
-		printf("[box] mPayload = ");
-		for (int i = 0; i < payloadLen; i++)
-		{
-			if (NULL != box.mPayload && 0 != strncmp(box.mType, "mdat", 4))
-				printf("%X", box.mPayload[i]);
-			else
-			{
-				printf("%s", box.mPayload);
-				break;
-			}
-		}
-		printf("\n\n");
-
+		printf("[%s] size(%2d), hasSubBox(%d)\n", box.mType, box.mSize, box.mSubBox);
+		
 		//5. Reset offset
 		if(box.mSubBox == true)
+		{
+			endOfDepth[depth] = offset + boxSize;
+			depth++;
 			offset+=8;
+		}
 		else
 			offset += boxSize;
-		getch();
+
+		for (int i = depth; i >=0; i--)
+			if(endOfDepth[depth-1] == offset)
+				depth--;
+		if( depth > 0)
+		{
+			for (int i = 0; i < depth; i++)
+				printf("   ");
+		}
+		//getch();
 	}
 	return 0;
 }
