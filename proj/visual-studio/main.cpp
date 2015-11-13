@@ -2,6 +2,9 @@
 #include "DataParser.h"
 #include "FileManager.h"
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <conio.h>
 
 int main(int argn, char* argv[])
 {
@@ -30,12 +33,31 @@ int main(int argn, char* argv[])
 
 		//3. Parse Box data.
 		Box box = Parser.parseBox(boxData);
+		int payloadLen = box.mSize - 8;
 
-		//4. Refresh offset
+		//4. Print Box data.
+		printf("[box] size = %d\n", box.mSize);
+		printf("[box] subBox = %d\n", box.mSubBox);
+		printf("[box] mType = %s\n", box.mType);
+		printf("[box] mPayload = ");
+		for (int i = 0; i < payloadLen; i++)
+		{
+			if (NULL != box.mPayload && 0 != strncmp(box.mType, "mdat", 4))
+				printf("%X", box.mPayload[i]);
+			else
+			{
+				printf("%s", box.mPayload);
+				break;
+			}
+		}
+		printf("\n\n");
+
+		//5. Reset offset
 		if(box.mSubBox == true)
 			offset+=8;
 		else
 			offset += boxSize;
+		getch();
 	}
 	return 0;
 }

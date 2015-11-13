@@ -58,15 +58,23 @@ char* DataParser::getParsedBoxType(char* unParsedData)
 
 char* DataParser::getParsedPayload(char* unParsedData)
 {
-	int i, j = 0;
-	
-	if (strncmp(parsedBoxType, "mdta", 4) == 0)
-		parsedBoxPayload = "This box has media data.";
-	else
-		parsedBoxPayload = (char*)realloc(parsedBoxPayload, parsedBoxSize - 8);
-	for (i = 8; i < parsedBoxSize; i++)
-		parsedBoxPayload[j++] = unParsedData[i];
+	int i = 8;
+	int j = 0;
+	int payloadLen = parsedBoxSize - 8;
 
+	if (strncmp(parsedBoxType, "mdat", 4) == 0)
+	{
+		parsedBoxPayload = (char*)realloc(parsedBoxPayload, 25);
+		memset(parsedBoxPayload, 0, 25);
+		memcpy(parsedBoxPayload, "This box has media data.", 25);
+	}
+	else
+	{
+		parsedBoxPayload = (char*)realloc(parsedBoxPayload, payloadLen);
+		for (i; i < payloadLen; i++)
+			parsedBoxPayload[j++] = unParsedData[i];
+	}
+	
 	return parsedBoxPayload;
 }
 
