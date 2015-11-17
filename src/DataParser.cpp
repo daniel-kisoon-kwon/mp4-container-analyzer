@@ -6,15 +6,16 @@ DataParser::DataParser()
 {
 	parsedBoxSize = 0;
 	memset(strParsedBoxSize, 0, 4);
-	parsedBoxType = (char*)malloc(sizeof(char) * 5);
-	memset(parsedBoxType, '\0', 5);
-	parsedBoxPayload = (char*)malloc(sizeof(char)*25);
-	memset(parsedBoxPayload, '\0', 25);
 	parsedSubBox = false;
 }
 
 Box DataParser::parseBox(char* unParsedData)
 {
+	parsedBoxType = (char*)malloc(sizeof(char) * 5);
+	memset(parsedBoxType, '\0', 5);
+	parsedBoxPayload = (char*)malloc(sizeof(char)*25);
+	memset(parsedBoxPayload, '\0', 25);
+
 	parsedBoxSize = getParsedBoxSize(unParsedData);
 	parsedBoxType = getParsedBoxType(unParsedData);
 
@@ -80,8 +81,17 @@ char* DataParser::getParsedPayload(char* unParsedData)
 
 DataParser::~DataParser()
 {
-	free(parsedBoxType);
-	free(parsedBoxPayload);
+	if(NULL != parsedBoxType)
+	{
+		free(parsedBoxType);
+		parsedBoxType = NULL;
+	}
+	if(NULL != parsedBoxPayload)
+	{
+		free(parsedBoxPayload);
+		parsedBoxPayload = NULL;
+	}
+	
 }
 
 

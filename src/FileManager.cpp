@@ -1,5 +1,6 @@
 #include "FileManager.h"
 #include <stdlib.h>
+#include <stdarg.h>
 
 FileManager::FileManager()
 {
@@ -30,6 +31,19 @@ size_t FileManager::getFileSize()
 	fseek(fp, 0, SEEK_SET);
 	printf("filesize : %d\n", ret);
 	return ret;
+}
+
+void FileManager::write(const char* _format,...)
+{
+	if(fp == NULL)
+		printf("File write error : fp is NULL\n");
+	else
+	{
+		va_list   arg;
+		va_start(arg, _format);
+		vfprintf(fp, _format, arg);
+		va_end(arg);
+	}
 }
 
 FileManager::~FileManager()

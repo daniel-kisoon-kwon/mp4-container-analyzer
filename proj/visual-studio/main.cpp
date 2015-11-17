@@ -21,26 +21,28 @@ int main(int argn, char* argv[])
 	}
 
 	FileManager FileReader(path, "rb");
-	FileManager FileWriter("output", "wa");
-	DataParser Parser;
-
+	FileManager FileWriter("output.txt", "w+");
+	
 	fileSize = FileReader.getFileSize();
 	while(fileSize != offset)
 	{
-		//1. Get Box size
+		DataParser Parser;
+
+		//1. Get Box size.
 		size_t boxSize = Parser.getParsedBoxSize(FileReader.getData(offset, 4));
 
-		//2. Get Box data
+		//2. Get Box data.
 		char* boxData = FileReader.getData(offset, boxSize);
 
 		//3. Parse Box data.
 		Box box = Parser.parseBox(boxData);
 		int payloadLen = box.mSize - 8;
 
-		//4. Print Box data.
+		//4. Write Box data.
 		printf("[%s] size(%2d), hasSubBox(%d)\n", box.mType, box.mSize, box.mSubBox);
+		FileWriter.write("[%s] size(%2d), hasSubBox(%d)\n", box.mType, box.mSize, box.mSubBox);
 		
-		//5. Reset offset
+		//5. Reset offset.
 		if(box.mSubBox == true)
 		{
 			endOfDepth[depth] = offset + boxSize;
@@ -50,15 +52,18 @@ int main(int argn, char* argv[])
 		else
 			offset += boxSize;
 
+		//6. Check depth and write.
 		for (int i = depth; i >=0; i--)
 			if(endOfDepth[depth-1] == offset)
 				depth--;
 		if( depth > 0)
 		{
 			for (int i = 0; i < depth; i++)
+			{
 				printf("   ");
+				FileWriter.write("   ");
+			}
 		}
-		//getch();
 	}
 	return 0;
 }
